@@ -1,0 +1,7 @@
+﻿data/
+runs/
+*.engine
+*.onnx
+__pycache__/
+*.pyc
+.venv/
