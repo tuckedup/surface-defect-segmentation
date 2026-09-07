@@ -1,5 +1,4 @@
-# Dataset configuration
-classes: ["crazing", "inclusion", "patches", "pitted_surface", "rolled-in_scale", "scratches"]
+﻿classes: ["crazing", "inclusion", "patches", "pitted_surface", "rolled-in_scale", "scratches"]
 
 paths:
   neu_det: "data/neu_det"
@@ -8,10 +7,7 @@ paths:
   mvtec: "data/mvtec"
   sd_saliency: "data/sd_saliency_900"
 
-# Sources with real pixel-level masks — used for mIoU evaluation.
-# NEU-DET (boxes only) and DAGM (weak ellipses) are excluded — see
-# src/data/unify.py and README.md for why.
-eval_sources: ["severstal", "sd_saliency", "mvtec"]
+eval_sources: ["severstal", "sd_saliency", "synthetic"]
 
 split_seed: 42
 input_size: [512, 512]

@@ -1,116 +1,55 @@
-\# Surface Defect Segmentation
-
-
+﻿# Surface Defect Segmentation
 
 Multi-source surface defect segmentation, unifying steel and industrial
-
 defect datasets into a single 6-class label space, with a controlled
-
 train/val/test split, TensorRT-optimized inference, and robustness
-
 evaluation under common real-world corruptions.
 
+## Class space
 
+- crazing
+- inclusion
+- patches
+- pitted_surface
+- rolled-in_scale
+- scratches
 
-\## Class space
-
-
-
-Unified into the canonical NEU-DET defect vocabulary:
-
-
-
-\- crazing
-
-\- inclusion
-
-\- patches
-
-\- pitted\_surface
-
-\- rolled-in\_scale
-
-\- scratches
-
-
-
-\## Data sources
-
-
+## Data sources
 
 | Source | Annotation type | Role |
-
 |---|---|---|
+| neu_det | Bounding boxes | Pretraining / detection only - not used for mIoU |
+| dagm | Weak elliptical labels, no semantic class names | Pretraining only - excluded from mIoU |
+| severstal | Pixel masks (RLE) | Primary - trains and evaluates |
+| mvtec | Pixel masks (non-steel objects) | Pretraining only - excluded from mIoU |
+| sd_saliency | Pixel masks | Primary - trains and evaluates |
 
-| NEU-DET | Bounding boxes | Pretraining / detection only — not used for mIoU |
+### Known assumption: Severstal class mapping
 
-| DAGM 2007 | Weak elliptical labels, no semantic class names | Pretraining only — \*\*excluded from mIoU evaluation\*\* |
+Severstal's Kaggle release labels defects only as classes 1, 2, 3, 4 with
+no official semantic names published by the dataset authors. The mapping
+used here (src/data/unify.py, MAPPING_SEVERSTAL) assigns semantic names
+based on interpretations used in some published work. This mapping is
+UNVERIFIED and should be treated as an assumption, not ground truth.
 
-| Severstal | Pixel masks (RLE) | Primary — trains and evaluates |
+### Why mvtec is excluded from evaluation
 
-| MVTec AD | Pixel masks | Primary — trains and evaluates |
+mvtec has real pixel masks but covers non-steel objects (leather, carpet,
+bottles). Mapping its defect types onto steel-defect classes (e.g. hole
+-> pitted_surface on a bottle) is not semantically valid for a steel
+surface defect benchmark, so it's used for pretraining only.
 
-| SD-saliency-900 | Pixel masks | Primary — trains and evaluates |
-
-
-
-\### Known assumption: Severstal class mapping
-
-
-
-Severstal's Kaggle release labels defects only as classes `1`, `2`, `3`,
-
-`4` with no official semantic names published by the dataset authors.
-
-The mapping used in this project (`src/data/unify.py`, `MAPPING\_SEVERSTAL`)
-
-assigns semantic names to these four classes based on interpretations
-
-used in some published work. \*\*This mapping is unverified\*\* and should
-
-be treated as an assumption, not ground truth, when interpreting results
-
-that include Severstal data.
-
-
-
-\### DAGM 2007 exclusion from evaluation
-
-
+### DAGM 2007 exclusion from evaluation
 
 DAGM 2007 provides only rough elliptical regions marking defect presence,
+not pixel-accurate masks. Used for pretraining/pretext tasks only.
 
-not pixel-accurate masks. It is used for pretraining/pretext tasks only.
+## Setup
 
-`configs/data.yaml: eval\_sources` excludes DAGM to prevent silently
+See requirements.txt for dependencies and scripts/download_data.sh for
+dataset download instructions.
 
-computing mIoU against weak labels.
+## Project status
 
-
-
-\## Setup
-
-
-
-See `requirements.txt` for dependencies and `scripts/download\_data.sh`
-
-for dataset download instructions.
-
-
-
-\## Reproducing results
-
-
-
-See `scripts/reproduce.sh` (to be added in a later session).
-
-
-
-\## Project status
-
-
-
-Work in progress. See `results/` for baseline and final metrics as they
-
+Work in progress. See results/ for baseline and final metrics as they
 are produced.
-
