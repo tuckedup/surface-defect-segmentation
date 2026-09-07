@@ -1,0 +1,10 @@
+torch==2.4.1
+torchvision==0.19.1
+albumentations==1.4.15
+opencv-python==4.10.0.84
+numpy==1.26.4
+pyyaml==6.0.2
+tqdm==4.66.5
+onnx==1.16.2
+onnxruntime-gpu==1.19.2
+pycocotools==2.0.8

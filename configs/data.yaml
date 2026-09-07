@@ -1,0 +1,12 @@
+# Dataset configuration
+classes: ["scratch", "inclusion", "patch", "pitted", "scabs", "other"]
+
+paths:
+  neu_det: "data/neu_det"
+  dagm: "data/dagm"
+  severstal: "data/severstal"
+  mvtec: "data/mvtec"
+
+split_seed: 42
+input_size: [512, 512]
+batch_size: 1
