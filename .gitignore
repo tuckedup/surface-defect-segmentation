@@ -1,4 +1,4 @@
-﻿data/
+/data/
 runs/
 *.engine
 *.onnx
@@ -7,3 +7,5 @@ __pycache__/
 .venv/
 
 *.bak
+
+src/**/__pycache__/
