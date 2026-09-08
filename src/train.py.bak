@@ -25,7 +25,7 @@ import yaml
 
 from src.data.splits import controlled_split, naive_split
 from src.models.build import build_model
-from src.data.unify import CLASSES, map_label, get_class_id
+from src.data.unify import CLASSES, map_label
 
 logger = logging.getLogger(__name__)
 
@@ -227,7 +227,7 @@ def save_checkpoint(
 # Entry point
 # ---------------------------------------------------------------------------
 
-def main(config_path: str, resume_path: str = None) -> None:
+def main(config_path: str) -> None:
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s  %(levelname)-8s  %(message)s",
@@ -283,16 +283,13 @@ def main(config_path: str, resume_path: str = None) -> None:
                     cname = class_map.get(cid)
                     if cname is None:
                         continue
-                    unified_id = get_class_id(cname)
-                    if unified_id is None:
-                        continue
                     samples.append(
                         {
                             "source": "severstal",
                             "class_name": cname,
                             "group_id": f"severstal/{fname}",
                             "image_rel": f"train_images/{fname}",
-                            "class_id": unified_id,
+                            "class_id": int(cid),
                             "rle": row["EncodedPixels"],
                         }
                     )
@@ -381,22 +378,10 @@ def main(config_path: str, resume_path: str = None) -> None:
     ckpt_dir = cfg.get("checkpoint_dir", "runs")
     os.makedirs(ckpt_dir, exist_ok=True)
 
-    start_epoch = 1
-    if resume_path:
-        logger.info("Resuming from checkpoint: %s", resume_path)
-        ckpt = torch.load(resume_path, map_location=device)
-        model.load_state_dict(ckpt["model_state_dict"])
-        optimizer.load_state_dict(ckpt["optimizer_state_dict"])
-        start_epoch = ckpt["epoch"] + 1
-        best_val_loss = ckpt.get("val_loss", float("inf"))
-        for _ in range(ckpt["epoch"]):
-            scheduler.step()  # fast-forward LR schedule (scheduler state wasn't saved)
-        logger.info("Resumed at epoch %d (best_val_loss=%.4f)", start_epoch, best_val_loss)
-    else:
-        best_val_loss = float("inf")
+    best_val_loss = float("inf")
 
     logger.info("Starting training for %d epochs", epochs)
-    for epoch in range(start_epoch, epochs + 1):
+    for epoch in range(1, epochs + 1):
         train_loss = train_one_epoch(
             model, train_loader, criterion, optimizer, scaler,
             device, amp_enabled, log_every, epoch,
@@ -445,16 +430,10 @@ def main(config_path: str, resume_path: str = None) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train segmentation model")
     parser.add_argument(
-        "--resume",
-        type=str,
-        default=None,
-        help="path to checkpoint .pt file to resume training from",
-    )
-    parser.add_argument(
         "--config",
         type=str,
         default="configs/train.yaml",
         help="Path to training config YAML",
     )
     args = parser.parse_args()
-    main(args.config, args.resume)
+    main(args.config)

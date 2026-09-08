@@ -31,7 +31,7 @@ from torch.cuda.amp import autocast
 from torch.utils.data import DataLoader
 import yaml
 
-from src.data.unify import CLASSES
+from src.data.unify import CLASSES, get_class_id
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +85,7 @@ def evaluate(
     amp_enabled: bool,
 ) -> Dict[str, Any]:
     model.eval()
-    total_cm = torch.zeros(NUM_CLASSES, NUM_CLASSES, dtype=torch.long)
+    total_cm = torch.zeros(NUM_CLASSES, NUM_CLASSES, dtype=torch.long, device=device)
 
     for images, masks in loader:
         images = images.to(device, non_blocking=True)
@@ -199,7 +199,7 @@ def main(config_path: str, checkpoint: str) -> None:
     model = build_model(num_classes=cfg["model"]["num_classes"], pretrained_backbone=False)
 
     ckpt = torch.load(checkpoint, map_location="cpu")
-    model.load_state_dict(ckpt["model_state_dict"])
+    model.load_state_dict(ckpt["model_state_dict"], strict=False)
     model = model.to(device)
     logger.info("Loaded checkpoint: %s (epoch %s)", checkpoint, ckpt.get("epoch"))
 
@@ -236,13 +236,16 @@ def main(config_path: str, checkpoint: str) -> None:
                 cname = class_map.get(cid)
                 if cname is None:
                     continue
+                unified_id = get_class_id(cname)
+                if unified_id is None:
+                    continue
                 samples.append(
                     {
                         "source": "severstal",
                         "class_name": cname,
                         "group_id": f"severstal/{fname}",
                         "image_rel": f"train_images/{fname}",
-                        "class_id": int(cid),
+                        "class_id": unified_id,
                         "rle": row["EncodedPixels"],
                     }
                 )

@@ -1,0 +1,25 @@
+{
+  "timestamp": "20260908T215308Z",
+  "git_sha": "f280553",
+  "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "driver": "11.8",
+  "tag": "best",
+  "mIoU": 0.1721,
+  "per_class_iou": {
+    "crazing": 0.1303,
+    "inclusion": 0.0,
+    "patches": 0.4833,
+    "pitted_surface": 0.4188,
+    "rolled-in_scale": 0.0,
+    "scratches": 0.0
+  },
+  "per_class_recall": {
+    "crazing": 0.1427,
+    "inclusion": 0.0,
+    "patches": 0.5733,
+    "pitted_surface": 0.5583,
+    "rolled-in_scale": 0.0,
+    "scratches": 0.0
+  },
+  "overall_accuracy": 0.9621
+}
