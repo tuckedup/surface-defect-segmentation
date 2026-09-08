@@ -29,6 +29,25 @@ from src.data.unify import CLASSES, map_label
 
 logger = logging.getLogger(__name__)
 
+
+def rle_decode(rle_string: str, shape: tuple, class_id: int) -> np.ndarray:
+    """Decode a Severstal-style RLE string into a 2D mask.
+
+    Severstal encodes pixels column-major (top-to-bottom, then left-to-right),
+    1-indexed start positions. Decode into (H, W) with class_id where set.
+    """
+    h, w = shape
+    mask = np.zeros(h * w, dtype=np.uint8)
+    if not isinstance(rle_string, str) or not rle_string.strip():
+        return mask.reshape(h, w)
+    parts = rle_string.split()
+    starts = np.asarray(parts[0::2], dtype=int) - 1
+    lengths = np.asarray(parts[1::2], dtype=int)
+    for start, length in zip(starts, lengths):
+        mask[start:start + length] = class_id
+    return mask.reshape(w, h).T
+
+
 # ---------------------------------------------------------------------------
 # Seed
 # ---------------------------------------------------------------------------
@@ -75,11 +94,8 @@ class TrainDataset(Dataset):
             raise FileNotFoundError(f"Cannot read image: {img_path}")
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-        mask_path = os.path.join(self.data_root, s["mask_rel"])
-        if os.path.exists(mask_path):
-            mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
-        else:
-            mask = np.zeros(image.shape[:2], dtype=np.uint8)
+        native_h, native_w = image.shape[0], image.shape[1]
+        mask = rle_decode(s.get("rle", ""), (native_h, native_w), s.get("class_id", 1))
 
         # Resize
         h, w = self.input_size
@@ -273,7 +289,8 @@ def main(config_path: str) -> None:
                             "class_name": cname,
                             "group_id": f"severstal/{fname}",
                             "image_rel": f"train_images/{fname}",
-                            "mask_rel": f"train_images/{fname}",  # placeholder
+                            "class_id": int(cid),
+                            "rle": row["EncodedPixels"],
                         }
                     )
         else:

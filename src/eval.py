@@ -210,7 +210,7 @@ def main(config_path: str, checkpoint: str) -> None:
 
     split_seed = data_cfg.get("split_seed", 42)
     from src.data.splits import controlled_split, naive_split
-    from src.train import TrainDataset
+    from src.train import TrainDataset, rle_decode
 
     # Rebuild sample list (same logic as train.py)
     import csv
@@ -231,8 +231,8 @@ def main(config_path: str, checkpoint: str) -> None:
         with open(csv_path) as f:
             reader = csv.DictReader(f)
             for row in reader:
-                fname = row["ImageId_ClassId"].rsplit("_", 1)[0]
-                cid = row["ImageId_ClassId"].rsplit("_", 1)[1]
+                fname = row["ImageId"]
+                cid = row["ClassId"]
                 cname = class_map.get(cid)
                 if cname is None:
                     continue
@@ -242,7 +242,8 @@ def main(config_path: str, checkpoint: str) -> None:
                         "class_name": cname,
                         "group_id": f"severstal/{fname}",
                         "image_rel": f"train_images/{fname}",
-                        "mask_rel": f"train_images/{fname}",
+                        "class_id": int(cid),
+                        "rle": row["EncodedPixels"],
                     }
                 )
 
