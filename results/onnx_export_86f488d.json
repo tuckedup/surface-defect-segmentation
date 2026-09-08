@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-09-07T12:59:38.340691+00:00",
+  "git_sha": "86f488d",
+  "seed": 42,
+  "gpu_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "driver_version": "581.80",
+  "onnx_paths": {
+    "fp32": "runs/export/model_fp32.onnx",
+    "fp16": "runs/export/model_fp16.onnx"
+  },
+  "opset_version": 17,
+  "input_size": [
+    256,
+    256
+  ],
+  "batch_size": 4,
+  "num_classes": 6,
+  "verification": {
+    "fp32_passed": true,
+    "fp16_loadable": false,
+    "fp16_passed": true
+  }
+}

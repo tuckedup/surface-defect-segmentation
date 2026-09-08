@@ -1,0 +1,44 @@
+# Training configuration – Session 2 baseline
+# Frozen conditions from AGENTS.md: 256×256 input, batch 4, AMP.
+
+seed: 42
+
+input_size: [256, 256]
+batch_size: 4
+num_workers: 4
+
+# Model ---------------------------------------------------------------
+model:
+  architecture: "unet"           # "unet" | "deeplabv3plus"
+  encoder: "resnet34"            # torchvision backbone name
+  num_classes: 7                 # 6 defect classes + background
+  pretrained: true
+
+# Optimiser / scheduler ------------------------------------------------
+optim:
+  optimizer: "adamw"
+  lr: 1.0e-4
+  weight_decay: 1.0e-4
+  scheduler: "cosine"
+  T_max: 50                     # epochs (tune after dataset size is known)
+  eta_min: 1.0e-6
+
+# Loss -----------------------------------------------------------------
+loss: "dice_ce"                  # "dice_ce" | "focal" | "cross_entropy"
+
+# Mixed precision ------------------------------------------------------
+amp: true
+
+# Training loop --------------------------------------------------------
+epochs: 50
+val_every: 1                     # validate every N epochs
+log_every: 50                    # log every N steps
+
+# Checkpointing --------------------------------------------------------
+checkpoint_dir: "runs"
+save_best: true
+save_last: true
+
+# Data -----------------------------------------------------------------
+data_config: "configs/data.yaml"  # paths, classes, split_seed
+split_strategy: "controlled"       # "naive" | "controlled"

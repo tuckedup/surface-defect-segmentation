@@ -1,0 +1,42 @@
+# Export and benchmark configuration
+# All values are fixed per AGENTS.md frozen conditions.
+#
+# TensorRT 11.x notes:
+#   Precision is driven by the ONNX graph, not by builder flags.
+#   Each precision variant is a SEPARATE ONNX file:
+#     - model_fp32.onnx: Original FP32
+#     - model_fp16.onnx: FP16 mixed-precision via modelopt AutoCast
+#     - model_int8.onnx: INT8 with Q/DQ nodes via modelopt PTQ
+
+model:
+  num_classes: 6
+  input_size: [256, 256]       # fixed per AGENTS.md
+  batch_size: 4                 # fixed per AGENTS.md
+
+onnx:
+  opset_version: 17
+  input_name: "input"
+  output_name: "output"
+  dynamic_axes: null            # fixed shape, no dynamic axes
+  # Each precision has its own ONNX file
+  fp32_path: "runs/export/model_fp32.onnx"
+  fp16_path: "runs/export/model_fp16.onnx"
+  int8_path: "runs/export/model_int8.onnx"
+
+tensorrt:
+  fp32_path: "runs/export/model_fp32.engine"
+  fp16_path: "runs/export/model_fp16.engine"
+  int8_path: "runs/export/model_int8.engine"
+  workspace_size_gb: 4
+
+benchmark:
+  warmup_iters: 50             # per AGENTS.md
+  timed_iters: 500             # per AGENTS.md
+  batch_size: 4
+  input_size: [256, 256]
+  results_dir: "results"
+
+calibration:
+  num_images: 500              # held-out set for INT8 calibration
+  seed: 42
+  calibration_method: "entropy" # or "max"

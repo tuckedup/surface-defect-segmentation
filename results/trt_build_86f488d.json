@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-09-07T11:53:03.719959+00:00",
+  "git_sha": "86f488d",
+  "seed": 42,
+  "gpu_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "driver_version": "581.80",
+  "engines": {
+    "fp32": "runs/export/model_fp32.engine",
+    "fp16": "runs/export/model_fp16.engine",
+    "int8": "runs/export/model_int8.engine"
+  },
+  "input_size": [
+    256,
+    256
+  ],
+  "batch_size": 4
+}

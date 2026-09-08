@@ -1,0 +1,80 @@
+{
+  "timestamp": "2026-09-07T13:51:18.196467+00:00",
+  "git_sha": "86f488d",
+  "seed": 42,
+  "gpu_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "driver_version": "581.80",
+  "benchmarks": {
+    "onnxruntime": {
+      "backend": "onnxruntime",
+      "mean_fps": 2.11,
+      "mean_latency_ms": 472.946,
+      "p95_latency_ms": 489.71,
+      "p99_latency_ms": 501.762,
+      "min_latency_ms": 455.984,
+      "max_latency_ms": 517.944,
+      "std_latency_ms": 8.602,
+      "warmup_iters": 50,
+      "timed_iters": 500,
+      "batch_size": 4,
+      "input_size": [
+        256,
+        256
+      ]
+    },
+    "tensorrt_fp32": {
+      "backend": "tensorrt",
+      "engine_path": "runs/export/model_fp32.engine",
+      "mean_fps": 29.46,
+      "mean_latency_ms": 33.947,
+      "p95_latency_ms": 35.479,
+      "p99_latency_ms": 36.082,
+      "min_latency_ms": 32.53,
+      "max_latency_ms": 36.532,
+      "std_latency_ms": 0.755,
+      "warmup_iters": 50,
+      "timed_iters": 500,
+      "batch_size": 4,
+      "input_size": [
+        256,
+        256
+      ]
+    },
+    "tensorrt_fp16": {
+      "backend": "tensorrt",
+      "engine_path": "runs/export/model_fp16.engine",
+      "mean_fps": 78.74,
+      "mean_latency_ms": 12.701,
+      "p95_latency_ms": 13.883,
+      "p99_latency_ms": 14.69,
+      "min_latency_ms": 10.585,
+      "max_latency_ms": 16.511,
+      "std_latency_ms": 0.744,
+      "warmup_iters": 50,
+      "timed_iters": 500,
+      "batch_size": 4,
+      "input_size": [
+        256,
+        256
+      ]
+    },
+    "tensorrt_int8": {
+      "backend": "tensorrt",
+      "engine_path": "runs/export/model_int8.engine",
+      "mean_fps": 153.92,
+      "mean_latency_ms": 6.497,
+      "p95_latency_ms": 7.506,
+      "p99_latency_ms": 7.984,
+      "min_latency_ms": 5.733,
+      "max_latency_ms": 10.265,
+      "std_latency_ms": 0.558,
+      "warmup_iters": 50,
+      "timed_iters": 500,
+      "batch_size": 4,
+      "input_size": [
+        256,
+        256
+      ]
+    }
+  }
+}
