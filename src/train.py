@@ -262,8 +262,8 @@ def main(config_path: str) -> None:
             with open(csv_path) as f:
                 reader = csv.DictReader(f)
                 for row in reader:
-                    fname = row["ImageId_ClassId"].rsplit("_", 1)[0]
-                    cid = row["ImageId_ClassId"].rsplit("_", 1)[1]
+                    fname = row["ImageId"]
+                    cid = row["ClassId"]
                     cname = class_map.get(cid)
                     if cname is None:
                         continue
