@@ -69,13 +69,13 @@ class TrainDataset(Dataset):
         import cv2
 
         s = self.samples[idx]
-        img_path = os.path.join(self.data_root, s["source"], s["image_rel"])
+        img_path = os.path.join(self.data_root, s["image_rel"])
         image = cv2.imread(img_path)
         if image is None:
             raise FileNotFoundError(f"Cannot read image: {img_path}")
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-        mask_path = os.path.join(self.data_root, s["source"], s["mask_rel"])
+        mask_path = os.path.join(self.data_root, s["mask_rel"])
         if os.path.exists(mask_path):
             mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
         else:
