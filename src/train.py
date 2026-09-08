@@ -24,6 +24,7 @@ from torch.utils.data import DataLoader, Dataset
 import yaml
 
 from src.data.splits import controlled_split, naive_split
+from src.models.build import build_model
 from src.data.unify import CLASSES, map_label
 
 logger = logging.getLogger(__name__)
@@ -94,44 +95,6 @@ class TrainDataset(Dataset):
 
 # ---------------------------------------------------------------------------
 # Model builder
-# ---------------------------------------------------------------------------
-
-def build_model(cfg: Dict[str, Any]) -> nn.Module:
-    """Build U-Net or DeepLabV3+ from torchvision."""
-    arch = cfg["model"]["architecture"]
-    num_classes = cfg["model"]["num_classes"]
-    pretrained = cfg["model"].get("pretrained", True)
-
-    if arch == "unet":
-        from torchvision.models.segmentation import (
-            deeplabv3_mobilenet_v3_large,
-            deeplabv3_resnet50,
-        )
-
-        # torchvision doesn't ship a stock U-Net; use a lightweight
-        # MobileNet-v3 DeepLabV3 variant as the default "unet" slot.
-        # When torchvision adds a U-Net, switch here.
-        model = deeplabv3_mobilenet_v3_large(
-            num_classes=num_classes,
-            pretrained_backbone=pretrained,
-            pretrained=False,
-        )
-    elif arch == "deeplabv3plus":
-        from torchvision.models.segmentation import deeplabv3_resnet50
-
-        model = deeplabv3_resnet50(
-            num_classes=num_classes,
-            pretrained_backbone=pretrained,
-            pretrained=False,
-        )
-    else:
-        raise ValueError(f"Unknown architecture: {arch}")
-
-    return model
-
-
-# ---------------------------------------------------------------------------
-# Loss
 # ---------------------------------------------------------------------------
 
 def build_loss(name: str) -> nn.Module:
@@ -372,7 +335,7 @@ def main(config_path: str) -> None:
     )
 
     # ---- Model ----------------------------------------------------------
-    model = build_model(cfg).to(device)
+    model = build_model(num_classes=cfg["model"]["num_classes"], pretrained_backbone=cfg["model"].get("pretrained", True)).to(device)
     criterion = build_loss(cfg.get("loss", "cross_entropy"))
 
     optimizer = torch.optim.AdamW(

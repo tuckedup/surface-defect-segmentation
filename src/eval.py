@@ -194,9 +194,9 @@ def main(config_path: str, checkpoint: str) -> None:
     logger.info("Device: %s", device)
 
     # Build model and load weights
-    from src.train import build_model
+    from src.models.build import build_model
 
-    model = build_model(cfg)
+    model = build_model(num_classes=cfg["model"]["num_classes"], pretrained_backbone=False)
 
     ckpt = torch.load(checkpoint, map_location="cpu")
     model.load_state_dict(ckpt["model_state_dict"])
